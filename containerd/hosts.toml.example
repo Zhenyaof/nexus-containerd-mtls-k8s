@@ -1,0 +1,10 @@
+# Example for registry 192.168.198.140:8443.
+# Install as:
+# /etc/containerd/certs.d/192.168.198.140:8443/hosts.toml
+
+server = "https://192.168.198.140:8443"
+
+[host."https://192.168.198.140:8443"]
+  capabilities = ["pull", "resolve"]
+  ca = "/etc/containerd/certs.d/192.168.198.140:8443/ca.crt"
+  client = [["/etc/containerd/certs.d/192.168.198.140:8443/client.crt", "/etc/containerd/certs.d/192.168.198.140:8443/client.key"]]

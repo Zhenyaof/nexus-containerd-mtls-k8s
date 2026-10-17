@@ -1,0 +1,51 @@
+name: Validate project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check shell script syntax
+        run: |
+          bash -n scripts/check-prerequisites.sh
+          bash -n scripts/test-registry.sh
+
+      - name: Validate TOML examples
+        run: |
+          python - <<'PY'
+          import tomllib
+          from pathlib import Path
+
+          for name in (
+              "containerd/config.toml.example",
+              "containerd/hosts.toml.example",
+          ):
+              with Path(name).open("rb") as f:
+                  tomllib.load(f)
+              print(f"Valid TOML: {name}")
+          PY
+
+      - name: Validate Kubernetes manifest
+        run: |
+          python -m pip install pyyaml
+          python - <<'PY'
+          import yaml
+
+          with open("kubernetes/pod.yaml", encoding="utf-8") as f:
+              manifest = yaml.safe_load(f)
+
+          assert manifest["apiVersion"] == "v1"
+          assert manifest["kind"] == "Pod"
+          assert manifest["metadata"]["name"] == "nexus-nginx"
+          print("Kubernetes manifest structure is valid")
+          PY

@@ -1,0 +1,10 @@
+flowchart TB
+    A["Kubernetes Pod"] --> B["Kubelet / CRI"]
+    B --> C["containerd"]
+    C -->|HTTPS + mTLS| D["Nginx Reverse Proxy"]
+    D -->|HTTP inside Docker network| E["Nexus Docker Registry :5000"]
+    E --> F["Private Image: nginx:1.28-alpine"]
+
+    G["Private CA"] -. "Trust certificate" .-> C
+    H["Client Certificate + Key"] -. "Authenticate client" .-> D
+    I["Registry Credentials"] -. "Authenticate image access" .-> E

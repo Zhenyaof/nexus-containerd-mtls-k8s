@@ -1,0 +1,5 @@
+# Merge this registry section into /etc/containerd/config.toml.
+# Do not replace your entire containerd configuration with this example.
+
+[plugins.'io.containerd.cri.v1.images'.registry]
+  config_path = '/etc/containerd/certs.d'
